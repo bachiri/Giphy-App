@@ -9,18 +9,19 @@ import io.bachirio.gighyapp.data.GifsDataSource;
  * Created by bachiri on 9/15/17.
  */
 
-public class GifsPresenter implements GifsContart.Presenter {
+public class GifsPresenter implements GifsContract.Presenter {
 
-    private final GifsContart.View mGifsView;
+    private final GifsContract.View mGifsView;
     private final GifsDataSource gifsDataSource;
+    private boolean mFirstLoad = true;
 
     @Override
     public void start() {
-        getGifs();
+        getGifs(false);
     }
 
 
-    public GifsPresenter(GifsContart.View mGifsView, GifsDataSource gifsDataSource) {
+    public GifsPresenter(GifsContract.View mGifsView, GifsDataSource gifsDataSource) {
         this.mGifsView = mGifsView;
         this.gifsDataSource = gifsDataSource;
         mGifsView.setPresenter(this);
@@ -28,12 +29,20 @@ public class GifsPresenter implements GifsContart.Presenter {
     }
 
     @Override
-    public void getGifs() {
+    public void getGifs(Boolean forceUpdate) {
+        if (forceUpdate || mFirstLoad) {
+            loadGifs();
+        }
+        mFirstLoad = false;
+
+    }
+
+    private void loadGifs() {
         mGifsView.setLoadingIndicator(true);
         gifsDataSource.getGifs(new GifsDataSource.LoadGifsCallBack() {
             @Override
             public void onGifsLoaded(List<Gif> gifs) {
-                mGifsView.showTasks(gifs);
+                mGifsView.showGifs(gifs);
             }
 
             @Override
@@ -41,8 +50,10 @@ public class GifsPresenter implements GifsContart.Presenter {
                 mGifsView.setOnErrorLoading();
             }
         });
-
     }
 
-
+    @Override
+    public void openGif(Gif gif) {
+        mGifsView.showGif(gif);
+    }
 }

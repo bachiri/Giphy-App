@@ -12,4 +12,6 @@ public interface GifsClient {
 
     @GET("/v1/gifs/trending?limit=20&fmt=json&offset=1&api_key=hewxRBG5FdomuauBppsiO0OV8OXv4Xkw")
     Call<GifsResponse> getGifs();
+
+
 }
